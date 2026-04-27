@@ -177,83 +177,86 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Drawer */}
-        <div
-          className={`lg:hidden fixed inset-0 z-40 transition-all duration-300 ${
-            mobileOpen ? "pointer-events-auto" : "pointer-events-none"
-          }`}
-        >
-          {/* Backdrop */}
-          <div
-            className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${mobileOpen ? "opacity-100" : "opacity-0"}`}
-            onClick={() => setMobileOpen(false)}
-          />
-          {/* Drawer */}
-          <div
-            className={`absolute top-0 right-0 w-80 h-full bg-white shadow-2xl transition-transform duration-300 ${
-              mobileOpen ? "translate-x-0" : "translate-x-full"
-            } flex flex-col`}
-          >
-            <div className="flex items-center justify-between p-6 border-b border-[var(--color-border-light)]">
-              <span className="font-script text-2xl" style={{ color: "var(--color-rose-gold)", fontFamily: "var(--font-script)" }}>
-                Angel&apos;s S&amp;S Design Co.
-              </span>
-              <button onClick={() => setMobileOpen(false)} className="p-2 cursor-pointer" aria-label="Close menu">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: "var(--color-charcoal)" }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+      </header>
 
-            <nav className="flex-1 overflow-y-auto p-6 flex flex-col gap-1">
-              <Link href="/" className="px-3 py-3 text-sm font-bold uppercase tracking-wide border-b border-[var(--color-border-light)]" style={{ color: "var(--color-charcoal)" }}>
-                Home
-              </Link>
-              <div>
-                <p className="px-3 py-3 text-sm font-bold uppercase tracking-wide border-b border-[var(--color-border-light)]" style={{ color: "var(--color-charcoal)" }}>
-                  Services
-                </p>
-                {serviceLinks.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="block px-6 py-2.5 text-sm transition-colors hover:bg-[var(--color-blush-light)]"
-                    style={{ color: "var(--color-muted)" }}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-              {navLinks.slice(1).map((link) => (
+      {/* Mobile Drawer */}
+      <div
+        className={`lg:hidden fixed inset-0 z-[60] transition-all duration-300 ${
+          mobileOpen ? "pointer-events-auto" : "pointer-events-none"
+        }`}
+      >
+        {/* Backdrop */}
+        <div
+          className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${mobileOpen ? "opacity-100" : "opacity-0"}`}
+          onClick={() => setMobileOpen(false)}
+        />
+        {/* Drawer */}
+        <div
+          className={`absolute top-0 right-0 w-80 h-full bg-white shadow-2xl transition-transform duration-300 ${
+            mobileOpen ? "translate-x-0" : "translate-x-full"
+          } flex flex-col`}
+        >
+          <div className="flex items-center justify-between p-6 border-b border-[var(--color-border-light)]">
+            <span className="font-script text-2xl" style={{ color: "var(--color-rose-gold)", fontFamily: "var(--font-script)" }}>
+              Angel&apos;s S&amp;S Design Co.
+            </span>
+            <button onClick={() => setMobileOpen(false)} className="p-2 cursor-pointer" aria-label="Close menu">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: "var(--color-charcoal)" }}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <nav className="flex-1 overflow-y-auto p-6 flex flex-col gap-1">
+            <Link href="/" onClick={() => setMobileOpen(false)} className="px-3 py-3 text-sm font-bold uppercase tracking-wide border-b border-[var(--color-border-light)]" style={{ color: "var(--color-charcoal)" }}>
+              Home
+            </Link>
+            <div>
+              <p className="px-3 py-3 text-sm font-bold uppercase tracking-wide border-b border-[var(--color-border-light)]" style={{ color: "var(--color-charcoal)" }}>
+                Services
+              </p>
+              {serviceLinks.map((item) => (
                 <Link
-                  key={link.href}
-                  href={link.href}
-                  className="px-3 py-3 text-sm font-bold uppercase tracking-wide border-b border-[var(--color-border-light)]"
-                  style={{ color: "var(--color-charcoal)" }}
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-6 py-2.5 text-sm transition-colors hover:bg-[var(--color-blush-light)]"
+                  style={{ color: "var(--color-muted)" }}
                 >
-                  {link.label}
+                  {item.label}
                 </Link>
               ))}
-            </nav>
-
-            <div className="p-6">
-              <Link href="/book" className="btn-glam w-full justify-center">
-                ✨ Book a Consultation
-              </Link>
-              <a
-                href="tel:9374140357"
-                className="flex items-center justify-center gap-2 mt-3 text-sm"
-                style={{ color: "var(--color-rose-gold)", fontFamily: "var(--font-body)" }}
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                (937) 414-0357
-              </a>
             </div>
+            {navLinks.slice(1).map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className="px-3 py-3 text-sm font-bold uppercase tracking-wide border-b border-[var(--color-border-light)]"
+                style={{ color: "var(--color-charcoal)" }}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="p-6">
+            <Link href="/book" onClick={() => setMobileOpen(false)} className="btn-glam w-full justify-center">
+              ✨ Book a Consultation
+            </Link>
+            <a
+              href="tel:9374140357"
+              className="flex items-center justify-center gap-2 mt-3 text-sm"
+              style={{ color: "var(--color-rose-gold)", fontFamily: "var(--font-body)" }}
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              (937) 414-0357
+            </a>
           </div>
         </div>
-      </header>
+      </div>
     </>
   );
 }
