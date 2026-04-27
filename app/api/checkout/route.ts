@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
-// Initialize Stripe with the secret key from environment variables
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2026-04-22.dahlia", // Current Stripe API Version
-});
-
 export async function POST(req: Request) {
   try {
     const { items, successUrl, cancelUrl, customerEmail, metadata } = await req.json();
@@ -16,6 +11,11 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
+
+    // Initialize Stripe with the secret key from environment variables
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2026-04-22.dahlia", // Current Stripe API Version
+    });
 
     // Map checkout items to Stripe line_items format
     const lineItems = items.map((item: any) => ({
