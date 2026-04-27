@@ -15,12 +15,30 @@ const servicesList = [
     reverse: false,
   },
   {
+    id: "columns",
+    title: "Balloon Columns",
+    price: "Starting at $75",
+    desc: "Freestanding balloon towers that add height and drama to entryways, dance floors, or stage corners. Available with custom toppers.",
+    features: ["Classic Spiral & Organic Styles", "Foil Toppers (Numbers, Characters)", "Base covers available"],
+    image: "/images/portfolio/1000010468.png",
+    reverse: true,
+  },
+  {
     id: "centerpieces",
     title: "Centerpieces & Pedestals",
     price: "Starting at $45 each",
     desc: "Elevate your tablescapes with custom balloon centerpieces. From elegant gold and acrylic pedestals to playful character-themed designs.",
     features: ["Bobo Balloons with stuffed animals", "Floral & Pearl draping", "Personalized lettering"],
     image: "/images/portfolio/1000010451.png",
+    reverse: false,
+  },
+  {
+    id: "rentals",
+    title: "Party Rentals",
+    price: "Starting at $50",
+    desc: "Complete your event's look with our curated selection of backdrops, neon signs, luxury seating, and display props.",
+    features: ["Shimmer Walls & Velvet Backdrops", "Custom Neon Signs", "Acrylic Pedestals & Candy Carts"],
+    image: "/images/portfolio/1000010471.png",
     reverse: true,
   },
   {
@@ -33,6 +51,24 @@ const servicesList = [
     reverse: false,
   },
   {
+    id: "floral-art",
+    title: "Repurposed Floral Art",
+    price: "Starting at $85",
+    desc: "Sustainable and stunning. We repurpose premium faux and dried florals to create breathtaking arrangements that look fresh and luxurious.",
+    features: ["Eco-friendly & Sustainable", "Custom color matching", "Perfect for long-term displays"],
+    image: "/images/portfolio/1000010511.jpg",
+    reverse: true,
+  },
+  {
+    id: "specialty",
+    title: "Specialty Items",
+    price: "Custom Quote",
+    desc: "Looking for something entirely unique? From giant marquee letters to custom vinyl-wrapped dance floors, we bring bespoke visions to life.",
+    features: ["Marquee Letters & Numbers", "Custom Vinyl Wrapping", "Personalized Party Favors"],
+    image: "/images/portfolio/1000010451.png",
+    reverse: false,
+  },
+  {
     id: "theme",
     title: "Full Theme Design",
     price: "Custom Quote",
@@ -40,6 +76,15 @@ const servicesList = [
     features: ["On-site installation & teardown", "Pre-event 3D mockup consultation", "Vendor coordination"],
     image: "/images/portfolio/1000010511.jpg",
     reverse: true,
+  },
+  {
+    id: "packages",
+    title: "Event Packages",
+    price: "Starting at $450",
+    desc: "Take the stress out of planning with our all-inclusive design packages. We bundle our most popular services for a cohesive, flawless look.",
+    features: ["Backdrop + Balloons + Centerpieces", "Full setup and teardown included", "Dedicated design consultation"],
+    image: "/images/portfolio/1000010482.png",
+    reverse: false,
   }
 ];
 
