@@ -21,6 +21,7 @@ const navLinks = [
   { label: "Portfolio", href: "/portfolio" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
+  { label: "Client Portal", href: "/client-portal" },
 ];
 
 export default function Navbar() {
