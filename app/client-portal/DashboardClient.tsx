@@ -78,8 +78,37 @@ export default function DashboardClient({ user, clientData, activeEvent, rsvpCou
                 </svg>
               </div>
               <h3 className="font-display text-xl text-[var(--color-charcoal)] mb-2">Remaining Balance</h3>
-              <p className="font-body text-4xl font-bold text-[var(--color-charcoal)] mb-4">$0.00</p>
-              <button className="btn-glam-outline w-full text-sm py-2 border-[var(--color-champagne)] text-[var(--color-champagne)] hover:bg-[var(--color-champagne)] hover:text-white">Make Payment</button>
+              <p className="font-body text-4xl font-bold text-[var(--color-charcoal)] mb-4">
+                ${activeEvent?.balance_due ? Number(activeEvent.balance_due).toFixed(2) : "0.00"}
+              </p>
+              <button 
+                onClick={async () => {
+                  if (!activeEvent || !activeEvent.balance_due || activeEvent.balance_due <= 0) {
+                    alert("You have no outstanding balance!");
+                    return;
+                  }
+                  
+                  try {
+                    const res = await fetch('/api/checkout', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ eventId: activeEvent.id })
+                    });
+                    const data = await res.json();
+                    if (data.url) {
+                      window.location.href = data.url;
+                    } else {
+                      alert(data.error || "Failed to create checkout session");
+                    }
+                  } catch (e) {
+                    console.error(e);
+                    alert("Network error.");
+                  }
+                }}
+                className="btn-glam-outline w-full text-sm py-2 border-[var(--color-champagne)] text-[var(--color-champagne)] hover:bg-[var(--color-champagne)] hover:text-white"
+              >
+                Make Payment
+              </button>
             </div>
 
             {/* Widget 3: Live Gallery */}
@@ -108,6 +137,44 @@ export default function DashboardClient({ user, clientData, activeEvent, rsvpCou
             <Link href="/client-portal/invitations" className="btn-glam whitespace-nowrap">
               Launch Studio ✨
             </Link>
+          </div>
+
+          {/* Social Auto-Pilot Banner */}
+          <div className="mt-8 glass-card p-10 flex flex-col md:flex-row items-center justify-between gap-8 border-l-4" style={{ borderColor: clientData?.facebook_access_token ? '#1877F2' : 'var(--color-border-light)' }}>
+            <div>
+              <span className="section-label mb-2" style={{ color: clientData?.facebook_access_token ? '#1877F2' : '' }}>
+                {clientData?.facebook_access_token ? 'Active Add-on' : 'SaaS Upgrade'}
+              </span>
+              <h2 className="font-display text-3xl text-[var(--color-charcoal)] mb-2">Social Auto-Pilot</h2>
+              <p className="font-body text-[var(--color-muted)] max-w-lg">
+                Automatically post exciting updates, countdowns, and galleries to your Facebook Page without lifting a finger.
+              </p>
+            </div>
+            {clientData?.facebook_access_token ? (
+              <div className="flex flex-col items-center">
+                <span className="px-6 py-3 bg-[#1877F2]/10 text-[#1877F2] font-bold rounded-full uppercase tracking-widest text-xs mb-2 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  Page Connected
+                </span>
+                <span className="text-xs text-[var(--color-muted)]">Auto-Posting is ON</span>
+              </div>
+            ) : (
+              <button 
+                onClick={async () => {
+                  await supabase.auth.signInWithOAuth({
+                    provider: 'facebook',
+                    options: {
+                      scopes: 'pages_manage_posts,pages_read_engagement',
+                      redirectTo: `${window.location.origin}/auth/callback`
+                    }
+                  });
+                }}
+                className="btn-glam whitespace-nowrap !bg-[#1877F2] hover:!bg-[#1877F2]/90 flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                Connect Facebook
+              </button>
+            )}
           </div>
 
         </div>

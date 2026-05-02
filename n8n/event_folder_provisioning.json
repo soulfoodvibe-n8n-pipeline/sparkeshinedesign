@@ -1,0 +1,140 @@
+{
+  "name": "Angel's Sparkle: Event Folder Provisioning",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "angels-sparkle-event-created",
+        "options": {}
+      },
+      "id": "e1f1c2b3-1234-4abc-8def-000000000001",
+      "name": "Supabase Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [ 250, 300 ],
+      "webhookId": "angels-sparkle-event-created"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "name": "={{ $json.body.record.slug }}",
+        "parents": [
+          "PARENT_DRIVE_FOLDER_ID_HERE"
+        ],
+        "options": {}
+      },
+      "id": "e1f1c2b3-1234-4abc-8def-000000000002",
+      "name": "Create Google Drive Folder",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 2,
+      "position": [ 500, 300 ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "GOOGLE_DRIVE_CREDENTIALS_ID",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fileId": "={{ $json.id }}",
+        "permissionsUi": {
+          "permissionsValues": [
+            {
+              "role": "writer",
+              "type": "anyone"
+            }
+          ]
+        }
+      },
+      "id": "e1f1c2b3-1234-4abc-8def-000000000003",
+      "name": "Make Folder Public for Photographer",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 2,
+      "position": [ 750, 300 ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "GOOGLE_DRIVE_CREDENTIALS_ID",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/events?id=eq.{{ $('Supabase Webhook').item.json.body.record.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"drive_folder_id\": \"{{ $('Create Google Drive Folder').item.json.id }}\"\n}",
+        "options": {}
+      },
+      "id": "e1f1c2b3-1234-4abc-8def-000000000004",
+      "name": "Update Event with Folder ID",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [ 1000, 300 ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "SUPABASE_CREDENTIALS_ID",
+          "name": "Supabase account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Supabase Webhook": {
+      "main": [
+        [
+          {
+            "node": "Create Google Drive Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Google Drive Folder": {
+      "main": [
+        [
+          {
+            "node": "Make Folder Public for Photographer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make Folder Public for Photographer": {
+      "main": [
+        [
+          {
+            "node": "Update Event with Folder ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ebf6c442-990a-42c2-b7b5-0b325255474c"
+}

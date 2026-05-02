@@ -10,9 +10,17 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     
     if (!error) {
+      // If there is a provider token (e.g. from Facebook), save it to the client's profile
+      if (data.session?.provider_token) {
+        await supabase
+          .from('clients')
+          .update({ facebook_access_token: data.session.provider_token })
+          .eq('user_id', data.session.user.id);
+      }
+
       const forwardedHost = request.headers.get('x-forwarded-host') 
       const isLocalEnv = process.env.NODE_ENV === 'development'
       

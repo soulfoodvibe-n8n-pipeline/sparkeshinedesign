@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS public.clients (
     last_name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     phone TEXT,
+    facebook_access_token TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
