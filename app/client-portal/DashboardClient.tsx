@@ -31,12 +31,17 @@ export default function DashboardClient({ user, clientData, activeEvent, rsvpCou
     <div style={{ background: "var(--color-warm-white)", minHeight: "100vh" }}>
       {/* Header */}
       <section className="pt-32 pb-12 bg-hero-gradient text-center relative">
-        <button 
-          onClick={handleSignOut}
-          className="absolute top-24 right-8 text-white/70 hover:text-white text-sm uppercase tracking-widest font-bold"
-        >
-          Sign Out
-        </button>
+        <div className="absolute top-24 right-8 flex items-center gap-6">
+          <Link href="/client-portal/help" className="text-[var(--color-champagne)] hover:text-white text-sm uppercase tracking-widest font-bold">
+            Help &amp; Support
+          </Link>
+          <button 
+            onClick={handleSignOut}
+            className="text-white/70 hover:text-white text-sm uppercase tracking-widest font-bold"
+          >
+            Sign Out
+          </button>
+        </div>
         <div className="container-glam relative z-10">
           <motion.h1 
             className="font-display text-4xl md:text-5xl text-white mb-4"

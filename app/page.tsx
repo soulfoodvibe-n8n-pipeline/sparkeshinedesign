@@ -439,6 +439,55 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
+          PUBLIC FAQ SECTION
+          ═══════════════════════════════════════════ */}
+      <section id="faq" style={{ padding: "6rem 0", background: "var(--color-ivory)" }}>
+        <div className="container-glam max-w-4xl">
+          <RevealSection className="text-center mb-12">
+            <span className="section-label">Common Questions</span>
+            <h2 className="section-title">Frequently Asked Questions</h2>
+            <hr className="gold-divider" />
+            <p className="section-subtitle">Everything you need to know before booking your celebration</p>
+          </RevealSection>
+
+          <div className="space-y-4 text-left">
+            {[
+              {
+                q: "How far in advance should I book my event?",
+                a: "For full theme designs and large balloon arches, we recommend booking at least 4 to 6 weeks in advance to ensure availability and allow time for custom prop sourcing. For smaller arrangements like charcuterie boxes or pedestal centerpieces, 2 weeks is usually sufficient!"
+              },
+              {
+                q: "Do you require a deposit?",
+                a: "Yes! To secure your date on our calendar, a non-refundable 50% retainer is required at the time of booking. The remaining balance is due 7 days prior to your event. You can easily manage your payments through your private Client Command Center."
+              },
+              {
+                q: "Do you travel outside of Dayton, Ohio?",
+                a: "Absolutely! While we are based in Dayton, we frequently travel to surrounding areas including Cincinnati and Columbus. A standard travel fee applies for locations further than 20 miles from our headquarters."
+              },
+              {
+                q: "What happens to the balloons after the event?",
+                a: "The balloons are yours to keep! However, any rented props (like metal arches, pedestals, or custom backdrops) must be returned or picked up by our team after your event concludes."
+              }
+            ].map((faq, i) => (
+              <RevealSection key={i} delay={i * 100}>
+                <details className="group glass-card p-6 cursor-pointer marker:content-['']">
+                  <summary className="font-display text-xl text-[var(--color-charcoal)] font-semibold flex justify-between items-center outline-none">
+                    {faq.q}
+                    <span className="transition group-open:rotate-180">
+                      <svg fill="none" height="24" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                    </span>
+                  </summary>
+                  <p className="font-body text-[var(--color-muted)] mt-4 leading-relaxed opacity-0 group-open:opacity-100 transition-opacity duration-300">
+                    {faq.a}
+                  </p>
+                </details>
+              </RevealSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
           CONSULTATION CTA
           ═══════════════════════════════════════════ */}
       <section

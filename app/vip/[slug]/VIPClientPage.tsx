@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import RSVPForm from "./RSVPForm";
 import PublicGallery from "./PublicGallery";
+import TipJar from "./TipJar";
 
 export default function VIPClientPage({ 
   event, 
@@ -179,6 +180,13 @@ export default function VIPClientPage({
       <section className="py-20">
         <div className="container-glam max-w-5xl">
           <PublicGallery eventId={event.id} initialImages={gallery} activeTheme={activeTheme} />
+        </div>
+      </section>
+
+      {/* 4. Digital Tip Jar */}
+      <section className="py-20 bg-black/5 backdrop-blur-md">
+        <div className="container-glam">
+          <TipJar eventId={event.id} />
         </div>
       </section>
     </div>
