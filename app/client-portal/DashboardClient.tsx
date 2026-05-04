@@ -128,6 +128,50 @@ export default function DashboardClient({ user, clientData, activeEvent, rsvpCou
               <Link href="/client-portal/gallery" className="btn-glam-outline w-full text-sm py-2 block border-[var(--color-mauve)] text-[var(--color-mauve)] hover:bg-[var(--color-mauve)] hover:text-white text-center">Moderate Photos</Link>
             </div>
 
+            {/* Widget 4: Cash Gift Registry */}
+            <div className="glass-card p-8 flex flex-col items-center text-center col-span-1 md:col-span-3">
+              <div className="w-16 h-16 rounded-full bg-[#00D632] flex items-center justify-center text-white mb-4 shadow-soft">
+                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="font-display text-xl text-[var(--color-charcoal)] mb-2">Cash Gift Registry</h3>
+              <p className="font-body text-sm text-[var(--color-muted)] mb-4 max-w-lg">
+                Allow guests to send you a cash gift (like a Honeymoon or Diaper fund) directly from your VIP page. Paste your personal CashApp, Venmo, or PayPal link below.
+              </p>
+              <div className="flex w-full max-w-md gap-2">
+                <input 
+                  type="url" 
+                  id="gift-link"
+                  defaultValue={activeEvent?.cash_gift_link || ""}
+                  placeholder="https://cash.app/$yourname" 
+                  className="input-glam flex-1 text-sm py-2" 
+                />
+                <button 
+                  onClick={async () => {
+                    const link = (document.getElementById('gift-link') as HTMLInputElement).value;
+                    try {
+                      const res = await fetch('/api/event/update-gift-link', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ eventId: activeEvent.id, cashGiftLink: link })
+                      });
+                      if (res.ok) {
+                        alert("Gift Link Saved! It is now live on your VIP page.");
+                      } else {
+                        alert("Failed to save link.");
+                      }
+                    } catch(e) {
+                      alert("Network error.");
+                    }
+                  }}
+                  className="btn-glam whitespace-nowrap !bg-[#00D632] hover:!bg-[#00b029]"
+                >
+                  Save Link
+                </button>
+              </div>
+            </div>
+
           </div>
 
           {/* Invitation Studio Banner */}

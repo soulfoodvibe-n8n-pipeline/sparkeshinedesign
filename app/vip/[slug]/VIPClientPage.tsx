@@ -183,12 +183,14 @@ export default function VIPClientPage({
         </div>
       </section>
 
-      {/* 4. Digital Tip Jar */}
-      <section className="py-20 bg-black/5 backdrop-blur-md">
-        <div className="container-glam">
-          <TipJar eventId={event.id} />
-        </div>
-      </section>
+      {/* 4. Digital Tip Jar / Gift Registry */}
+      {event.cash_gift_link && (
+        <section className="py-20 bg-black/5 backdrop-blur-md">
+          <div className="container-glam">
+            <TipJar cashGiftLink={event.cash_gift_link} />
+          </div>
+        </section>
+      )}
     </div>
   );
 }
