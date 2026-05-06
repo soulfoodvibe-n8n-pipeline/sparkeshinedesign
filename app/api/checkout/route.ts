@@ -2,12 +2,12 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@/lib/supabase/server';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: '2023-10-16' as any, // use recent version
-});
-
 export async function POST(req: Request) {
   try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string || 'sk_test_dummy', {
+      apiVersion: '2023-10-16' as any,
+    });
+
     const { eventId } = await req.json();
     
     if (!eventId) {
