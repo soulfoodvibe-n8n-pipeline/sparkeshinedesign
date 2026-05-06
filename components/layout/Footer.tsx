@@ -16,6 +16,8 @@ const quickLinks = [
   { label: "About Angel", href: "/about" },
   { label: "Book a Consultation", href: "/book" },
   { label: "Contact", href: "/contact" },
+  { label: "Client Portal", href: "/client-portal" },
+  { label: "Owner Login", href: "/admin/login" },
 ];
 
 export default function Footer() {
