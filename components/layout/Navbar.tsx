@@ -21,13 +21,18 @@ const navLinks = [
   { label: "Portfolio", href: "/portfolio" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
+];
+
+const loginLinks = [
   { label: "Client Portal", href: "/client-portal" },
+  { label: "Owner Login", href: "/admin/login" },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -39,6 +44,7 @@ export default function Navbar() {
   useEffect(() => {
     setMobileOpen(false);
     setServicesOpen(false);
+    setLoginOpen(false);
   }, [pathname]);
 
   const isActive = (href: string) =>
@@ -150,6 +156,53 @@ export default function Navbar() {
                 </Link>
               ))}
 
+              {/* Login Dropdown */}
+              <div
+                className="relative"
+                onMouseEnter={() => setLoginOpen(true)}
+                onMouseLeave={() => setLoginOpen(false)}
+              >
+                <button
+                  className={`flex items-center gap-1 px-4 py-2 text-sm font-semibold tracking-wide uppercase transition-colors duration-200 cursor-pointer ${
+                    pathname.startsWith("/client-portal") || pathname.startsWith("/admin")
+                      ? "text-rose-gold"
+                      : isSolid
+                      ? "text-charcoal hover:text-rose-gold"
+                      : "text-white/90 hover:text-white"
+                  }`}
+                  style={{
+                    color: pathname.startsWith("/client-portal") || pathname.startsWith("/admin")
+                      ? "var(--color-rose-gold)"
+                      : isSolid
+                      ? "var(--color-charcoal)"
+                      : "rgba(255,255,255,0.9)",
+                  }}
+                >
+                  Login
+                  <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${loginOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {/* Dropdown */}
+                <div
+                  className={`absolute top-full left-1/2 -translate-x-1/2 mt-1 w-48 bg-white rounded-xl shadow-[0_8px_40px_rgba(61,53,53,0.14)] border border-[var(--color-border-light)] overflow-hidden transition-all duration-200 ${
+                    loginOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"
+                  }`}
+                >
+                  {loginLinks.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="block px-5 py-3 text-sm transition-colors duration-150 hover:bg-[var(--color-blush-light)]"
+                      style={{ color: "var(--color-charcoal)", fontFamily: "var(--font-body)" }}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
               <Link href="/book" className="btn-glam ml-4" style={{ padding: "0.6rem 1.4rem", fontSize: "0.8rem" }}>
                 ✨ Book Now
               </Link>
@@ -239,6 +292,23 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+
+            <div>
+              <p className="px-3 py-3 text-sm font-bold uppercase tracking-wide border-b border-[var(--color-border-light)]" style={{ color: "var(--color-charcoal)" }}>
+                Login
+              </p>
+              {loginLinks.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-6 py-2.5 text-sm transition-colors hover:bg-[var(--color-blush-light)]"
+                  style={{ color: "var(--color-muted)" }}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
           </nav>
 
           <div className="p-6">
