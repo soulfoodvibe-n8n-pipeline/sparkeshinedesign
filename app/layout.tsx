@@ -6,9 +6,6 @@ import {
   Great_Vibes,
 } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import FloatingBookBtn from "@/components/layout/FloatingBookBtn";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -70,18 +67,55 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import FloatingBookBtn from "@/components/layout/FloatingBookBtn";
+import { createClient } from "@supabase/supabase-js";
+
+// Initialize a generic client for the layout (read-only)
+// Note: We use the anon key here since RLS allows public read access
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  
+  // Fetch global site settings
+  let siteSettings = {
+    phoneNumber: "(937) 414-0357",
+    emailAddress: "hello@sparkleshine.com"
+  };
+  
+  try {
+    if (supabaseUrl && supabaseAnonKey) {
+      const { data } = await supabase
+        .from('site_settings')
+        .select('*')
+        .limit(1)
+        .single();
+        
+      if (data) {
+        siteSettings = {
+          phoneNumber: data.phone_number || siteSettings.phoneNumber,
+          emailAddress: data.email_address || siteSettings.emailAddress
+        };
+      }
+    }
+  } catch (e) {
+    console.error("Failed to load site settings:", e);
+  }
+
   return (
     <html
       lang="en"
       className={`${playfair.variable} ${cormorant.variable} ${lato.variable} ${greatVibes.variable}`}
     >
       <body>
-        <Navbar />
+        <Navbar settings={siteSettings} />
         <main>{children}</main>
-        <Footer />
+        <Footer settings={siteSettings} />
         <FloatingBookBtn />
       </body>
     </html>

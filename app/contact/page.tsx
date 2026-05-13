@@ -1,8 +1,31 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ContactPage() {
+  const [phoneNumber, setPhoneNumber] = useState("(937) 414-0357");
+  const [emailAddress, setEmailAddress] = useState("hello@sparkleshine.com");
+
+  useEffect(() => {
+    async function loadSettings() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('site_settings')
+        .select('*')
+        .limit(1)
+        .single();
+      if (data) {
+        if (data.phone_number) setPhoneNumber(data.phone_number);
+        if (data.email_address) setEmailAddress(data.email_address);
+      }
+    }
+    loadSettings();
+  }, []);
+
+  const phoneFormatted = phoneNumber.replace(/[^0-9]/g, '');
+
   return (
     <div style={{ background: "var(--color-warm-white)", minHeight: "100vh", paddingTop: "120px" }}>
       <div className="container-glam pb-24">
@@ -28,7 +51,12 @@ export default function ContactPage() {
             <div className="space-y-6 font-body text-[var(--color-foreground)]">
               <div>
                 <p className="text-sm font-bold text-[var(--color-muted)] uppercase tracking-wider mb-1">Phone / Text</p>
-                <a href="tel:9374140357" className="text-lg hover:text-[var(--color-rose-gold)] transition-colors">(937) 414-0357</a>
+                <a href={`tel:${phoneFormatted}`} className="text-lg hover:text-[var(--color-rose-gold)] transition-colors">{phoneNumber}</a>
+              </div>
+              
+              <div>
+                <p className="text-sm font-bold text-[var(--color-muted)] uppercase tracking-wider mb-1">Email</p>
+                <a href={`mailto:${emailAddress}`} className="text-lg hover:text-[var(--color-rose-gold)] transition-colors">{emailAddress}</a>
               </div>
               
               <div>

@@ -63,6 +63,13 @@ CREATE TABLE IF NOT EXISTS public.portfolio_images (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS public.site_settings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    phone_number TEXT NOT NULL DEFAULT '(937) 414-0357',
+    email_address TEXT NOT NULL DEFAULT 'hello@sparkleshine.com',
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Create Storage Buckets (if they don't exist)
 INSERT INTO storage.buckets (id, name, public) 
 VALUES ('event_images', 'event_images', true)
@@ -78,6 +85,7 @@ ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.rsvps ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.gallery_images ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.portfolio_images ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
 
 -- Clients can only read their own profile
 CREATE POLICY "Clients can view own profile" 
@@ -122,6 +130,16 @@ CREATE POLICY "Public can view portfolio images"
 -- Only admins (authenticated users) can insert/delete portfolio images
 CREATE POLICY "Admins can manage portfolio images" 
     ON public.portfolio_images FOR ALL 
+    USING (auth.role() = 'authenticated');
+    
+-- Site settings are viewable by everyone
+CREATE POLICY "Public can view site settings" 
+    ON public.site_settings FOR SELECT 
+    USING (true);
+
+-- Only admins can update site settings
+CREATE POLICY "Admins can update site settings" 
+    ON public.site_settings FOR ALL 
     USING (auth.role() = 'authenticated');
     
 -- Note: You also need Storage policies for the 'public_portfolio' bucket

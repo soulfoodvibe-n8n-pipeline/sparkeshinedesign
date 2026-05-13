@@ -267,6 +267,56 @@ export default function AdminClient({ user, clients, events, totalRevenue }: Adm
               </form>
             </div>
 
+            {/* Global Site Settings Form */}
+            <div className="glass-card p-8 !bg-white/5 border border-white/10 md:col-span-2">
+              <h3 className="font-display text-2xl text-[var(--color-rose-gold)] mb-6">4. Global Site Settings</h3>
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const phoneInput = form.elements.namedItem('phone') as HTMLInputElement;
+                const emailInput = form.elements.namedItem('email') as HTMLInputElement;
+                
+                setLoading(true);
+                
+                try {
+                  // We just try to insert. If one exists, we could use upsert. 
+                  // Since we didn't add a unique constraint, we'll just delete all and insert one to be safe and simple.
+                  await supabase.from('site_settings').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+                  
+                  const { error } = await supabase
+                    .from('site_settings')
+                    .insert({
+                      phone_number: phoneInput.value,
+                      email_address: emailInput.value
+                    });
+                    
+                  if (error) throw error;
+                  
+                  alert("Global Settings Updated!");
+                  form.reset();
+                  
+                } catch (error: any) {
+                  alert("Update Failed: " + error.message);
+                } finally {
+                  setLoading(false);
+                }
+              }} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div className="md:col-span-1">
+                  <label className="block text-xs text-white/50 uppercase tracking-widest mb-1">Phone Number</label>
+                  <input type="text" name="phone" required placeholder="e.g. (937) 414-0357" className="input-glam w-full !bg-black/40 !text-white !border-white/20" />
+                </div>
+                <div className="md:col-span-1">
+                  <label className="block text-xs text-white/50 uppercase tracking-widest mb-1">Email Address</label>
+                  <input type="email" name="email" required placeholder="e.g. hello@sparkleshine.com" className="input-glam w-full !bg-black/40 !text-white !border-white/20" />
+                </div>
+                <div className="md:col-span-1">
+                  <button type="submit" disabled={loading} className="btn-glam w-full !bg-[var(--color-rose-gold)] !text-white border-none whitespace-nowrap">
+                    {loading ? "Saving..." : "Save Settings"}
+                  </button>
+                </div>
+              </form>
+            </div>
+
           </div>
 
           {/* Active Events Table */}
