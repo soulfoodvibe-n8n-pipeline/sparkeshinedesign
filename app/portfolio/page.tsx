@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
 const portfolioCategories = [
   "All",
@@ -14,20 +15,34 @@ const portfolioCategories = [
   "Full Events",
 ];
 
-const portfolioItems = [
-  { src: "/images/portfolio/1000010451.png", alt: "Gold pedestal balloon centerpiece with stuffed animal", category: "Centerpieces", title: "Baby Shower Gold Pedestal" },
-  { src: "/images/portfolio/1000010492.png", alt: "Pink and rose gold balloon arch birthday backdrop", category: "Balloon Arches", title: "Rose Gold Birthday Arch" },
-  { src: "/images/portfolio/1000010482.png", alt: "Branded charcuterie boxes with pink bow balloons", category: "Charcuterie", title: "Bridal Party Grazing Boxes" },
-  { src: "/images/portfolio/1000010468.png", alt: "Elegant floral pedestal with pearl draping", category: "Pedestal Art", title: "Pearl & Floral Pedestal" },
-  { src: "/images/portfolio/1000010511.jpg", alt: "Full flamingo-themed party setup with greenery wall", category: "Full Events", title: "Tropical Flamingo Setup" },
-  { src: "/images/portfolio/1000010471.png", alt: "Mothers Day pink and gold balloon arrangement", category: "Centerpieces", title: "Mother's Day Arrangement" },
-  { src: "/images/portfolio/1000010451.png", alt: "Rustic Theme Centerpiece", category: "Centerpieces", title: "Rustic Theme Centerpiece" },
-  { src: "/images/portfolio/1000010492.png", alt: "Corporate Event Arch", category: "Balloon Arches", title: "Corporate Event Arch" },
-];
-
 export default function PortfolioPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedItem, setSelectedItem] = useState<{ src: string; alt: string; title: string; category: string } | null>(null);
+  const [portfolioItems, setPortfolioItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadPortfolio() {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('portfolio_images')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (data) {
+        // Map database columns to component props
+        const mappedData = data.map(item => ({
+          src: item.image_url,
+          alt: item.title,
+          title: item.title,
+          category: item.category
+        }));
+        setPortfolioItems(mappedData);
+      }
+      setLoading(false);
+    }
+    loadPortfolio();
+  }, []);
 
   const filteredItems = activeCategory === "All" 
     ? portfolioItems 
@@ -74,51 +89,60 @@ export default function PortfolioPage() {
           })}
         </motion.div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--color-rose-gold)]"></div>
+          </div>
+        )}
+
         {/* Masonry Grid */}
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence>
-            {filteredItems.map((item, i) => (
-              <motion.div
-                key={item.src + i}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-                whileHover={{ scale: 1.02 }}
-                onClick={() => setSelectedItem(item)}
-                className="portfolio-card group relative overflow-hidden rounded-xl bg-white shadow-sm cursor-pointer"
-                style={{ height: i % 2 === 0 ? "400px" : "320px" }}
-              >
-                <Image 
-                  src={item.src} 
-                  alt={item.alt} 
-                  fill 
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-110" 
-                />
-                
-                {/* Overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-charcoal)]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                  <span className="text-[var(--color-rose-gold-light)] text-xs font-bold uppercase tracking-widest mb-1">
-                    {item.category}
-                  </span>
-                  <h3 className="text-white font-display text-xl leading-tight">
-                    {item.title}
-                  </h3>
-                  <p className="text-white/80 text-xs uppercase tracking-widest mt-2 font-body font-bold flex items-center gap-1">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                    </svg>
-                    Expand
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+        {!loading && (
+          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence>
+              {filteredItems.map((item, i) => (
+                <motion.div
+                  key={item.src + i}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                  whileHover={{ scale: 1.02 }}
+                  onClick={() => setSelectedItem(item)}
+                  className="portfolio-card group relative overflow-hidden rounded-xl bg-white shadow-sm cursor-pointer"
+                  style={{ height: i % 2 === 0 ? "400px" : "320px" }}
+                >
+                  <Image 
+                    src={item.src} 
+                    alt={item.alt} 
+                    fill 
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-110" 
+                  />
+                  
+                  {/* Overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-charcoal)]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                    <span className="text-[var(--color-rose-gold-light)] text-xs font-bold uppercase tracking-widest mb-1">
+                      {item.category}
+                    </span>
+                    <h3 className="text-white font-display text-xl leading-tight">
+                      {item.title}
+                    </h3>
+                    <p className="text-white/80 text-xs uppercase tracking-widest mt-2 font-body font-bold flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                      </svg>
+                      Expand
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        )}
 
         <AnimatePresence>
-          {filteredItems.length === 0 && (
+          {!loading && filteredItems.length === 0 && (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

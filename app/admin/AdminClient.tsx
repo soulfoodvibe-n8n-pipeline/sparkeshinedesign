@@ -191,6 +191,82 @@ export default function AdminClient({ user, clients, events, totalRevenue }: Adm
               </form>
             </div>
 
+            {/* Portfolio Manager Form */}
+            <div className="glass-card p-8 !bg-white/5 border border-white/10 md:col-span-2">
+              <h3 className="font-display text-2xl text-[var(--color-rose-gold)] mb-6">3. Portfolio Manager</h3>
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const fileInput = form.elements.namedItem('image') as HTMLInputElement;
+                const titleInput = form.elements.namedItem('title') as HTMLInputElement;
+                const categoryInput = form.elements.namedItem('category') as HTMLSelectElement;
+                
+                if (!fileInput.files || fileInput.files.length === 0) return;
+                
+                setLoading(true);
+                const file = fileInput.files[0];
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+                
+                try {
+                  // 1. Upload to Supabase Storage
+                  const { error: uploadError } = await supabase.storage
+                    .from('public_portfolio')
+                    .upload(fileName, file);
+                    
+                  if (uploadError) throw uploadError;
+                  
+                  // 2. Get Public URL
+                  const { data: { publicUrl } } = supabase.storage
+                    .from('public_portfolio')
+                    .getPublicUrl(fileName);
+                    
+                  // 3. Insert into database
+                  const { error: insertError } = await supabase
+                    .from('portfolio_images')
+                    .insert({
+                      image_url: publicUrl,
+                      title: titleInput.value,
+                      category: categoryInput.value
+                    });
+                    
+                  if (insertError) throw insertError;
+                  
+                  alert("Portfolio Image Uploaded Successfully! It is now live on your site.");
+                  form.reset();
+                  
+                } catch (error: any) {
+                  alert("Upload Failed: " + error.message);
+                } finally {
+                  setLoading(false);
+                }
+              }} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div className="md:col-span-1">
+                  <label className="block text-xs text-white/50 uppercase tracking-widest mb-1">Image File</label>
+                  <input type="file" name="image" required accept="image/*" className="input-glam w-full !bg-black/40 !text-white !border-white/20 text-sm" />
+                </div>
+                <div className="md:col-span-1">
+                  <label className="block text-xs text-white/50 uppercase tracking-widest mb-1">Title</label>
+                  <input type="text" name="title" required placeholder="e.g. Pink Balloon Arch" className="input-glam w-full !bg-black/40 !text-white !border-white/20" />
+                </div>
+                <div className="md:col-span-1">
+                  <label className="block text-xs text-white/50 uppercase tracking-widest mb-1">Category</label>
+                  <select name="category" required className="input-glam w-full !bg-black/40 !text-white !border-white/20">
+                    <option value="Balloon Arches">Balloon Arches</option>
+                    <option value="Centerpieces">Centerpieces</option>
+                    <option value="Charcuterie">Charcuterie</option>
+                    <option value="Pedestal Art">Pedestal Art</option>
+                    <option value="Full Events">Full Events</option>
+                  </select>
+                </div>
+                <div className="md:col-span-1">
+                  <button type="submit" disabled={loading} className="btn-glam w-full !bg-[#00D632] !text-white border-none whitespace-nowrap">
+                    {loading ? "Uploading..." : "Publish to Site"}
+                  </button>
+                </div>
+              </form>
+            </div>
+
           </div>
 
           {/* Active Events Table */}

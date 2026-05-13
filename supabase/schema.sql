@@ -55,11 +55,29 @@ CREATE TABLE IF NOT EXISTS public.gallery_images (
     uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS public.portfolio_images (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    image_url TEXT NOT NULL,
+    title TEXT NOT NULL,
+    category TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create Storage Buckets (if they don't exist)
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('event_images', 'event_images', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('public_portfolio', 'public_portfolio', true)
+ON CONFLICT (id) DO NOTHING;
+
 -- 3. Set up Row Level Security (RLS)
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.rsvps ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.gallery_images ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.portfolio_images ENABLE ROW LEVEL SECURITY;
 
 -- Clients can only read their own profile
 CREATE POLICY "Clients can view own profile" 
@@ -95,3 +113,18 @@ CREATE POLICY "Public can view approved gallery images"
 CREATE POLICY "Clients can moderate their gallery images" 
     ON public.gallery_images FOR UPDATE 
     USING (event_id IN (SELECT id FROM public.events WHERE client_id IN (SELECT id FROM public.clients WHERE user_id = auth.uid())));
+
+-- Portfolio images are viewable by everyone
+CREATE POLICY "Public can view portfolio images" 
+    ON public.portfolio_images FOR SELECT 
+    USING (true);
+
+-- Only admins (authenticated users) can insert/delete portfolio images
+CREATE POLICY "Admins can manage portfolio images" 
+    ON public.portfolio_images FOR ALL 
+    USING (auth.role() = 'authenticated');
+    
+-- Note: You also need Storage policies for the 'public_portfolio' bucket
+-- These can be set in the Supabase UI or via SQL:
+-- CREATE POLICY "Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'public_portfolio');
+-- CREATE POLICY "Admin Insert" ON storage.objects FOR INSERT USING (bucket_id = 'public_portfolio' AND auth.role() = 'authenticated');
